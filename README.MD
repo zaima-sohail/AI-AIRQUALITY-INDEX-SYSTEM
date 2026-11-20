@@ -7,7 +7,11 @@ interactive Streamlit dashboard.
 > **Live demo:** TODO (add your Streamlit link here)
 > **Author:** TODO (your name) · [LinkedIn](TODO) · [GitHub](https://github.com/TODO)
 
-![Dashboard screenshot](docs/dashboard.png)
+## Dashboard screenshots
+
+![Air quality forecast dashboard](dashboard.png)
+
+![City comparison and recent PM2.5 trends](data-monitoring.png)
 
 ---
 
