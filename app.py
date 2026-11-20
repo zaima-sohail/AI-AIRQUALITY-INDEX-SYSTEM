@@ -1,8 +1,11 @@
+import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 import joblib
 import pandas as pd
+import sklearn
 import streamlit as st
 from sklearn.pipeline import Pipeline
 
@@ -13,17 +16,53 @@ st.set_page_config(
 )
 
 APP_DIR = Path(__file__).resolve().parent
+FEATURES_PATH = APP_DIR / "features.csv"
+FEATURE_LIST_PATH = APP_DIR / "features_list.joblib"
+MODEL_METADATA_PATH = APP_DIR / "model_metadata.json"
+SAVE_MODELS_PATH = APP_DIR / "save_models.py"
+MODEL_PATHS = (
+    MODEL_METADATA_PATH,
+    FEATURE_LIST_PATH,
+    *(APP_DIR / f"ridge_h{horizon}.joblib" for horizon in (1, 2, 3)),
+)
 TRAINING_CUTOFF = pd.Timestamp("2026-08-01")
 
 
+def file_signature(paths: tuple[Path, ...]) -> tuple[tuple[str, int, int], ...]:
+    missing_paths = [path for path in paths if not path.is_file()]
+    if missing_paths:
+        missing = ", ".join(str(path) for path in missing_paths)
+        rebuild_command = f'"{sys.executable}" "{SAVE_MODELS_PATH}"'
+        raise FileNotFoundError(
+            f"Required dashboard files are missing: {missing}. "
+            f"Generate them with {rebuild_command}."
+        )
+    return tuple(
+        (str(path), path.stat().st_mtime_ns, path.stat().st_size)
+        for path in paths
+    )
+
+
 @st.cache_data
-def load_features() -> pd.DataFrame:
-    return pd.read_csv(APP_DIR / "features.csv", parse_dates=["date"])
+def load_features(signature: tuple[tuple[str, int, int], ...]) -> pd.DataFrame:
+    return pd.read_csv(FEATURES_PATH, parse_dates=["date"])
 
 
 @st.cache_resource
-def load_models() -> tuple[list[str], dict[int, Pipeline]]:
-    feature_names: list[str] = joblib.load(APP_DIR / "features_list.joblib")
+def load_models(
+    signature: tuple[tuple[str, int, int], ...],
+) -> tuple[list[str], dict[int, Pipeline]]:
+    metadata = json.loads(MODEL_METADATA_PATH.read_text(encoding="utf-8"))
+    trained_version = metadata.get("scikit_learn_version")
+    if trained_version != sklearn.__version__:
+        rebuild_command = f'"{sys.executable}" "{SAVE_MODELS_PATH}"'
+        raise RuntimeError(
+            "The saved models were trained with scikit-learn "
+            f"{trained_version!r}, but this app is using {sklearn.__version__}. "
+            f"Regenerate the models with the same interpreter: {rebuild_command}"
+        )
+
+    feature_names: list[str] = joblib.load(FEATURE_LIST_PATH)
     models = {
         horizon: joblib.load(APP_DIR / f"ridge_h{horizon}.joblib")
         for horizon in (1, 2, 3)
@@ -31,8 +70,8 @@ def load_models() -> tuple[list[str], dict[int, Pipeline]]:
     return feature_names, models
 
 
-FEATURES, MODELS = load_models()
-features = load_features()
+FEATURES, MODELS = load_models(file_signature(MODEL_PATHS))
+features = load_features(file_signature((FEATURES_PATH,)))
 
 @dataclass(frozen=True)
 class AirQualityGuidance:

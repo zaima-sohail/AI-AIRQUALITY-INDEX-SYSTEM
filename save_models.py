@@ -1,6 +1,8 @@
+import json
 from pathlib import Path
 
 import pandas as pd, joblib
+import sklearn
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.impute import SimpleImputer
@@ -57,4 +59,7 @@ for H in (1, 2, 3):
 joblib.dump(FEATURES, SCRIPT_DIR / "features_list.joblib")
 data[["city", "date", "target1", "target2", "target3"] + FEATURES].to_csv(
     SCRIPT_DIR / "features.csv", index=False)
+with (SCRIPT_DIR / "model_metadata.json").open("w", encoding="utf-8") as metadata_file:
+    json.dump({"scikit_learn_version": sklearn.__version__}, metadata_file, indent=2)
 print("Saved features.csv:", len(data), "rows")
+print("Saved model_metadata.json for scikit-learn:", sklearn.__version__)

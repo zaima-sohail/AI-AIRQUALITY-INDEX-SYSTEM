@@ -1,8 +1,8 @@
 # AI Air Quality Predictor
 
 Forecasts **PM2.5 (smog) 1–3 days ahead** for **Lahore, Karachi and Islamabad**, explains
-which factors push pollution up, and turns the forecast into **bilingual (English/Urdu)
-health advice** in an interactive Streamlit dashboard.
+which factors push pollution up, and provides **English, general health guidance** in an
+interactive Streamlit dashboard.
 
 > **Live demo:** TODO (add your Streamlit link here)
 > **Author:** TODO (your name) · [LinkedIn](TODO) · [GitHub](https://github.com/TODO)
@@ -24,9 +24,9 @@ Ground monitors are sparse and most people only see today's AQI. This project as
 ## Features
 - **1, 2 and 3-day PM2.5 forecast** for three cities, compared against a "tomorrow = today" baseline
 - **Explainability with SHAP**: estimated contribution of fires, wind, humidity/rain and cold-season conditions
-- **Health advisor** (English + Urdu) tailored to 7 groups: general public, children and school,
-  elderly, asthma/heart/lung conditions, pregnant women, outdoor workers, athletes
-- **3-day plan**, best day for outdoor activity, and a "smog getting worse" warning
+- **Health advisor** with PM2.5-band guidance, sensitive groups, practical precautions,
+  symptom warnings, and a three-day outlook
+- **Data monitoring** for dataset freshness and daily record coverage by city
 - **Interactive dashboard** built with Streamlit
 
 ---
@@ -124,9 +124,8 @@ TODO: add `docs/shap_smog_season.png` and, if you like, the sanity-check R² of 
 ├── train_multi.py        # 1/2/3-day forecasts, Ridge vs XGBoost vs baseline
 ├── shap_explain.py       # SHAP attribution and charts
 ├── save_models.py        # train final models, save features.csv for the dashboard
-├── advisor.py            # health-advice rules (English + Urdu)
 ├── app.py                # Streamlit dashboard
-├── dataset.csv, features.csv, *.joblib
+├── dataset.csv, features.csv, model_metadata.json, *.joblib
 └── requirements.txt
 ```
 
@@ -139,10 +138,17 @@ TODO: add `docs/shap_smog_season.png` and, if you like, the sanity-check R² of 
 git clone https://github.com/TODO/ai-air-quality-predictor.git
 cd ai-air-quality-predictor
 python -m venv .venv
-# Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app.py
+python save_models.py
+python -m streamlit run app.py
 ```
+
+Run `save_models.py` and the dashboard with the same Python environment. The saved
+scikit-learn models are version-sensitive; regenerate them with `python save_models.py`
+after switching environments or changing the scikit-learn version. The dashboard checks
+the recorded version before loading the models and reloads regenerated artifacts.
 
 **Rebuild everything from raw data**
 1. Create free API keys at [OpenAQ](https://explore.openaq.org) and [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/api/map_key).
