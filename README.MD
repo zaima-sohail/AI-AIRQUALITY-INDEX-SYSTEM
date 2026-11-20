@@ -5,7 +5,7 @@ which factors push pollution up, and provides **English, general health guidance
 interactive Streamlit dashboard.
 
 
-<<<<<<< HEAD
+
 ## Dashboard screenshots
 
 ![Air quality forecast dashboard](dashboard.png)
@@ -14,7 +14,6 @@ interactive Streamlit dashboard.
 =======
 > **Live demo:** [Open the dashboard](https://zaima-sohail-ai-airquality-index-system-app-5gqnez.streamlit.app/)
 
->>>>>>> 396ac07ff4640da7934af86e200f1144c616d6d5
 
 ---
 
