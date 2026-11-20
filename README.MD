@@ -4,14 +4,17 @@ Forecasts **PM2.5 (smog) 1–3 days ahead** for **Lahore, Karachi and Islamabad*
 which factors push pollution up, and provides **English, general health guidance** in an
 interactive Streamlit dashboard.
 
-> **Live demo:** TODO (add your Streamlit link here)
-> **Author:** TODO (your name) · [LinkedIn](TODO) · [GitHub](https://github.com/TODO)
 
+<<<<<<< HEAD
 ## Dashboard screenshots
 
 ![Air quality forecast dashboard](dashboard.png)
 
 ![City comparison and recent PM2.5 trends](data-monitoring.png)
+=======
+> **Live demo:** [Open the dashboard](https://zaima-sohail-ai-airquality-index-system-app-5gqnez.streamlit.app/)
+
+>>>>>>> 396ac07ff4640da7934af86e200f1144c616d6d5
 
 ---
 
